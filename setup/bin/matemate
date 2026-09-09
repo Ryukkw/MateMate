@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# Resolve the installation symlink before locating common.sh.
+MATE_ENTRY="${BASH_SOURCE[0]}"
+while [[ -L "$MATE_ENTRY" ]]; do
+  MATE_DIR="$(cd "$(dirname "$MATE_ENTRY")" && pwd)"
+  MATE_ENTRY="$(readlink "$MATE_ENTRY")"
+  [[ "$MATE_ENTRY" = /* ]] || MATE_ENTRY="$MATE_DIR/$MATE_ENTRY"
+done
+source "$(dirname "$MATE_ENTRY")/common.sh"
+if [[ ! -f "$MATE_HOME/AGENTS.md" ]]; then
+  echo "MateMate is missing: $MATE_HOME" >&2
+  exit 1
+fi
+cd "$MATE_HOME"
+export FM_HOME="$MATE_HOME"
+unset NO_COLOR
+export COLORTERM=truecolor
+exec herdr "$@"
