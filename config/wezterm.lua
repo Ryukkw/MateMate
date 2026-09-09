@@ -3,6 +3,9 @@ local act = wezterm.action
 
 local config = wezterm.config_builder()
 
+-- Attach to the persistent MateMate / Herdr session on normal GUI launch.
+config.default_prog = { wezterm.home_dir .. '/.local/bin/matemate' }
+
 config.font = wezterm.font_with_fallback {
   'JetBrains Mono',
   'Menlo',
