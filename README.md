@@ -49,6 +49,9 @@ matemate
 
 - `config/wezterm.lua`: непрозрачность 50%, размытие 24, шрифт 14, клавиши с `Ctrl-a`.
 - Контрастная ANSI-палитра: красный, зелёный, жёлтый, синий, фиолетовый и бирюзовый.
+- `config/MateMate.terminal`: профиль macOS Terminal.app на основе Clear Dark,
+  с непрозрачностью фона 50%. Импортируй двойным кликом и выбери его профилем
+  по умолчанию в настройках Terminal. Скрипт `apply.sh` его не применяет.
 - `config/terminal-colors.sh`: снимает унаследованный `NO_COLOR` только в
   интерактивных оболочках WezTerm / Herdr и задаёт `COLORTERM=truecolor`.
 - `config/firstmate/`: Herdr как backend, Pi как harness исполнителей.
