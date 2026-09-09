@@ -17,6 +17,14 @@ config.colors = {
   cursor_fg = '#07111f',
   selection_bg = '#24466f',
   selection_fg = '#ffffff',
+  ansi = {
+    '#202633', '#ff7b86', '#a3d98b', '#f2cd83',
+    '#82aaff', '#c6a0f6', '#79d5d5', '#dce7f7',
+  },
+  brights = {
+    '#8b98ad', '#ff9ba5', '#b8ed9f', '#ffe0a3',
+    '#a1c0ff', '#ddb8ff', '#a1eded', '#ffffff',
+  },
 }
 
 config.window_decorations = 'RESIZE'

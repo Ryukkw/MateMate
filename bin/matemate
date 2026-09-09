@@ -13,4 +13,6 @@ if [[ ! -d "$MATE_HOME/.git" ]]; then
   exit 1
 fi
 cd "$MATE_HOME"
+unset NO_COLOR
+export COLORTERM=truecolor
 exec herdr "$@"
