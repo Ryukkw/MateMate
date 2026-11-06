@@ -35,6 +35,9 @@ else
 fi
 herdr integration install pi
 herdr integration install codex
+if command -v codex >/dev/null 2>&1; then
+  bash "$MATE_ROOT/setup/bin/codex-session-setup.sh"
+fi
 npm ci --prefix "$MATE_ROOT/setup/plugins/clipboard" --ignore-scripts --no-audit --no-fund
 herdr plugin link "$MATE_ROOT/setup/plugins/clipboard" --enabled
 node "$MATE_ROOT/setup/plugins/clipboard/configure.mjs"

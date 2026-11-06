@@ -13,6 +13,9 @@ herdr status --json | jq -e '.client | {version, protocol} | select(.protocol >=
 herdr integration status
 test -s "$HOME/.pi/agent/extensions/herdr-agent-state.ts"
 test -s "$HOME/.codex/herdr-agent-state.sh"
+if command -v codex >/dev/null 2>&1; then
+  bash "$MATE_ROOT/setup/bin/codex-session-setup.sh" --check
+fi
 gh auth status
 for item in backend crew-harness; do
   cmp "$MATE_ROOT/setup/config/firstmate/$item" "$MATE_HOME/config/$item"
