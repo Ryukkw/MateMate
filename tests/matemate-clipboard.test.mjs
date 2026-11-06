@@ -1,5 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { paste } from '../setup/plugins/clipboard/paste.mjs';
 import { parseJsonc, terminalSettings, herdrSettings } from '../setup/plugins/clipboard/configure.mjs';
 
@@ -30,8 +31,14 @@ test('upgrade replaces only MateMate clipboard binding and keeps unrelated bindi
   const before = 'onboarding = false\n[[keys.command]]\nkey = "ctrl+alt+p"\ncommand = "matemate.clipboard.paste"\n[[keys.command]]\nkey = "ctrl+alt+x"\ncommand = "custom"\n';
   const after = herdrSettings(before, {platform:'darwin'});
   assert.equal(herdrSettings(after, {platform:'darwin'}), after);
-  assert.ok(after.includes('key = "ctrl+alt+v"'));
-  assert.ok(after.includes('key = "ctrl+alt+x"\ncommand = "custom"'));
+  const config = JSON.parse(execFileSync('python3', ['-c',
+    'import json, sys, tomllib; json.dump(tomllib.loads(sys.stdin.read()), sys.stdout)',
+  ], {input: after, encoding: 'utf8'}));
+  assert.equal(config.onboarding, false);
+  assert.deepEqual(config.keys.command, [
+    {key: 'ctrl+alt+v', type: 'plugin_action', command: 'matemate.clipboard.paste', description: 'Paste image file or text'},
+    {key: 'ctrl+alt+x', command: 'custom'},
+  ]);
 });
 test('image paste uses the exact saved PNG and never opens a viewer or sends Enter', async () => {
   const calls = []; let bytes;
