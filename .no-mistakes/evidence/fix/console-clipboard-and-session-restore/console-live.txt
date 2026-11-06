@@ -1,0 +1,46 @@
+$ node /Users/nsmcompany/.no-mistakes/worktrees/9d1bf4b9bddd/01M6RMQXE4K0JBZ0TNMJ1F4TBS/setup/plugins/clipboard/configure.mjs --herdr-config /Users/nsmcompany/.no-mistakes/worktrees/9d1bf4b9bddd/01M6RMQXE4K0JBZ0TNMJ1F4TBS/.test-console-live/config.toml
+Configured: /Users/nsmcompany/.no-mistakes/worktrees/9d1bf4b9bddd/01M6RMQXE4K0JBZ0TNMJ1F4TBS/.test-console-live/config.toml
+
+$ node /Users/nsmcompany/.no-mistakes/worktrees/9d1bf4b9bddd/01M6RMQXE4K0JBZ0TNMJ1F4TBS/setup/plugins/clipboard/configure.mjs --herdr-config /Users/nsmcompany/.no-mistakes/worktrees/9d1bf4b9bddd/01M6RMQXE4K0JBZ0TNMJ1F4TBS/.test-console-live/config.toml
+
+$ herdr config check
+config: ok
+
+Generated public config:
+[[keys.command]]
+key = "ctrl+alt+x"
+command = "custom"
+
+[[keys.command]]
+key = "ctrl+alt+v"
+type = "plugin_action"
+command = "matemate.clipboard.paste"
+description = "Paste image file or text"
+
+$ node /Users/nsmcompany/.no-mistakes/worktrees/9d1bf4b9bddd/01M6RMQXE4K0JBZ0TNMJ1F4TBS/setup/plugins/clipboard/configure.mjs --herdr-config /Users/nsmcompany/.no-mistakes/worktrees/9d1bf4b9bddd/01M6RMQXE4K0JBZ0TNMJ1F4TBS/.test-console-live/config.toml
+file:///Users/nsmcompany/.no-mistakes/worktrees/9d1bf4b9bddd/01M6RMQXE4K0JBZ0TNMJ1F4TBS/setup/plugins/clipboard/configure.mjs:72
+    throw new Error(`Herdr already has a custom ${shortcut} binding; it has been left unchanged.`);
+          ^
+
+Error: Herdr already has a custom ctrl+alt+v binding; it has been left unchanged.
+    at herdrSettings (file:///Users/nsmcompany/.no-mistakes/worktrees/9d1bf4b9bddd/01M6RMQXE4K0JBZ0TNMJ1F4TBS/setup/plugins/clipboard/configure.mjs:72:11)
+    at update (file:///Users/nsmcompany/.no-mistakes/worktrees/9d1bf4b9bddd/01M6RMQXE4K0JBZ0TNMJ1F4TBS/setup/plugins/clipboard/configure.mjs:88:19)
+    at file:///Users/nsmcompany/.no-mistakes/worktrees/9d1bf4b9bddd/01M6RMQXE4K0JBZ0TNMJ1F4TBS/setup/plugins/clipboard/configure.mjs:102:3
+    at ModuleJob.run (node:internal/modules/esm/module_job:430:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:639:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v25.8.2
+
+$ bash setup/bin/codex-session-setup.sh
+MateMate: interactive Codex inside Herdr now preserves per-pane session context.
+
+$ bash setup/bin/codex-session-setup.sh --check
+
+$ /Users/nsmcompany/.no-mistakes/worktrees/9d1bf4b9bddd/01M6RMQXE4K0JBZ0TNMJ1F4TBS/.test-console-live/home/.local/bin/codex --version
+codex-cli 0.167.0
+
+$ /Users/nsmcompany/.no-mistakes/worktrees/9d1bf4b9bddd/01M6RMQXE4K0JBZ0TNMJ1F4TBS/.test-console-live/home/.local/bin/codex --version
+codex-cli 0.167.0
+
+$ bash setup/bin/codex-session-setup.sh
