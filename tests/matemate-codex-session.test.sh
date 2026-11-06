@@ -48,6 +48,10 @@ print(json.dumps(sys.argv[1:]))
         ('1', ['--no-daemon', 'resume', 'thread-id'], ['--no-daemon', 'resume', 'thread-id']),
         ('0', ['resume', 'thread-id'], ['resume', 'thread-id']),
     ]
+    for command in ('e', 'a', 'archive', 'delete', 'unarchive', 'exec-server'):
+        for prefix in ([], ['--model', 'chosen-model']):
+            arguments = [*prefix, command, 'task with spaces']
+            cases.append(('1', arguments, arguments))
     for marker, arguments, expected in cases:
         env = dict(environment, HERDR_ENV=marker)
         actual = json.loads(subprocess.check_output([str(destination), *arguments], env=env, text=True))
@@ -63,5 +67,5 @@ print(json.dumps(sys.argv[1:]))
     destination.symlink_to(unrelated)
     assert setup().returncode != 0 and destination.resolve() == unrelated.resolve()
     assert setup('--check').returncode != 0
-print('ok - standalone Codex installation, idempotence, 12 argv cases, and custom-launcher refusal')
+print(f'ok - standalone Codex installation, idempotence, {len(cases)} argv cases, and custom-launcher refusal')
 PY

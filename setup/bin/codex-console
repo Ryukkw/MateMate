@@ -13,7 +13,7 @@ for MATE_ARG in "$@"; do
     --) break ;;
     -*) ;;
     resume|fork) break ;;
-    exec|review|login|logout|mcp|mcp-server|app-server|app|completion|sandbox|debug|apply|cloud|features|plugin|update|doctor|agents|queue|remote-control) MATE_INTERACTIVE=0; break ;;
+    exec|e|exec-server|review|login|logout|mcp|mcp-server|app-server|app|completion|sandbox|debug|apply|a|archive|delete|unarchive|cloud|features|plugin|update|doctor|agents|queue|remote-control) MATE_INTERACTIVE=0; break ;;
     *) break ;;
   esac
 done
