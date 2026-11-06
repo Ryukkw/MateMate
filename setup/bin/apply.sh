@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# shellcheck source=setup/bin/common.sh
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 [[ -f "$MATE_HOME/AGENTS.md" ]] || { echo "MateMate missing: $MATE_HOME" >&2; exit 1; }
 backup_copy "$MATE_ROOT/setup/config/wezterm.lua" "$HOME/.wezterm.lua"
@@ -8,6 +9,8 @@ case "${SHELL:-/bin/zsh}" in
   */bash) MATE_SHELL_RC="$HOME/.bashrc" ;;
   *) MATE_SHELL_RC="$HOME/.zshrc" ;;
 esac
+# Expanded when the generated shell startup line is executed.
+# shellcheck disable=SC2016
 MATE_COLOR_SOURCE='[ ! -f "$HOME/.config/matemate/terminal-colors.sh" ] || . "$HOME/.config/matemate/terminal-colors.sh"'
 if ! grep -Fqx "$MATE_COLOR_SOURCE" "$MATE_SHELL_RC" 2>/dev/null; then
   if [[ -e "$MATE_SHELL_RC" ]]; then
@@ -31,4 +34,9 @@ else
   ln -s "$MATE_ROOT/setup/bin/matemate" "$MATE_LINK"
 fi
 herdr integration install pi
+herdr integration install codex
+npm ci --prefix "$MATE_ROOT/setup/plugins/clipboard" --ignore-scripts --no-audit --no-fund
+herdr plugin link "$MATE_ROOT/setup/plugins/clipboard" --enabled
+node "$MATE_ROOT/setup/plugins/clipboard/configure.mjs"
+herdr config check
 echo "MateMate configured. Launch: matemate"
