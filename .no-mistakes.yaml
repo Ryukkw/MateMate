@@ -22,16 +22,13 @@ document:
     evidence destination, and unique safety facts, then review the complete
     branch diff again after every documentation or lint fix.
 
-# Pin lint to the same owner CI invokes instead of leaving it to no-mistakes'
-# default handling, which does not invoke the repository's canonical lint gate.
-# `bin/fm-lint.sh` owns the context-sensitive ShellCheck modes and GitHub
-# workflow lint via pinned actionlint in `bin/fm-lint-workflows.sh`.
-# Invocation wiring is asserted by `tests/fm-lint.test.sh` and
-# `tests/fm-lint-workflows.test.sh`.
+# Use the canonical lint owner's explicit-files mode for the changed shell files.
+# This distribution has no GitHub workflows; explicit roots retain full ShellCheck
+# analysis without invoking the workflow-only check.
 #
 # Keep commands.test absent; the firstmate-coding-guidelines skill owns this policy.
 commands:
-  lint: 'bin/fm-lint.sh'
+  lint: 'bin/fm-lint.sh setup/bin/apply.sh setup/bin/codex-console setup/bin/codex-session-setup.sh setup/bin/verify.sh tests/matemate-clipboard.test.sh tests/matemate-codex-session.test.sh'
 
 # Publish each run's test evidence to the orphan no-mistakes/evidence branch linked from the PR.
 # The evidence is not committed to the feature or default branch.
