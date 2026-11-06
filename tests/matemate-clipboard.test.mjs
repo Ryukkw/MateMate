@@ -4,6 +4,12 @@ import { execFileSync } from 'node:child_process';
 import { paste } from '../setup/plugins/clipboard/paste.mjs';
 import { parseJsonc, terminalSettings, herdrSettings } from '../setup/plugins/clipboard/configure.mjs';
 
+function parseToml(text) {
+  return JSON.parse(execFileSync('python3', ['-c',
+    'import json, sys, tomllib; json.dump(tomllib.loads(sys.stdin.read()), sys.stdout)',
+  ], {input: text, encoding: 'utf8'}));
+}
+
 test('Windows Terminal JSONC preserves paths, strings and unrelated preferences', () => {
   const input = '{ // comment\n"profiles":{"list":[{"commandline":"C:\\\\Tools\\\\pwsh.exe","name":"keep,}",},],},"url":"https://example.com",/* end */}';
   const parsed = parseJsonc(input), configured = terminalSettings(parsed);
@@ -31,13 +37,48 @@ test('upgrade replaces only MateMate clipboard binding and keeps unrelated bindi
   const before = 'onboarding = false\n[[keys.command]]\nkey = "ctrl+alt+p"\ncommand = "matemate.clipboard.paste"\n[[keys.command]]\nkey = "ctrl+alt+x"\ncommand = "custom"\n';
   const after = herdrSettings(before, {platform:'darwin'});
   assert.equal(herdrSettings(after, {platform:'darwin'}), after);
-  const config = JSON.parse(execFileSync('python3', ['-c',
-    'import json, sys, tomllib; json.dump(tomllib.loads(sys.stdin.read()), sys.stdout)',
-  ], {input: after, encoding: 'utf8'}));
+  const config = parseToml(after);
   assert.equal(config.onboarding, false);
   assert.deepEqual(config.keys.command, [
     {key: 'ctrl+alt+v', type: 'plugin_action', command: 'matemate.clipboard.paste', description: 'Paste image file or text'},
     {key: 'ctrl+alt+x', command: 'custom'},
+  ]);
+});
+test('commented Herdr bindings are inactive and cannot claim user commands', () => {
+  for (const platform of ['darwin', 'win32']) {
+    const shortcut = platform === 'darwin' ? 'ctrl+alt+v' : 'ctrl+v';
+    const before = `onboarding = false
+# [[keys.command]]
+# key = "${shortcut}"
+# command = "matemate.clipboard.paste"
+[[keys.command]]
+key = "ctrl+alt+x"
+# command = "matemate.clipboard.attach"
+command = "custom"
+description = 'command = "matemate.clipboard.paste"'
+`;
+    const after = herdrSettings(before, {platform});
+    const config = parseToml(after);
+    assert.equal(config.onboarding, false);
+    assert.deepEqual(config.keys.command, [
+      {key: 'ctrl+alt+x', command: 'custom', description: 'command = "matemate.clipboard.paste"'},
+      {key: shortcut, type: 'plugin_action', command: 'matemate.clipboard.paste', description: 'Paste image file or text'},
+    ]);
+    assert.equal(herdrSettings(after, {platform}), after);
+    assert.throws(() => herdrSettings(`[[keys.command]]
+key = "${shortcut}"
+# command = "matemate.clipboard.paste"
+command = "custom"
+`, {platform}), /custom/);
+  }
+});
+test('Herdr upgrade recognizes semantic TOML table names and command values', () => {
+  const after = herdrSettings(`[[ "keys" . 'command' ]]
+key = "ctrl+alt+p"
+command = "matemate.clipboard.\\u0070aste"
+`, {platform: 'darwin'});
+  assert.deepEqual(parseToml(after).keys.command, [
+    {key: 'ctrl+alt+v', type: 'plugin_action', command: 'matemate.clipboard.paste', description: 'Paste image file or text'},
   ]);
 });
 test('image paste uses the exact saved PNG and never opens a viewer or sends Enter', async () => {

@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, copyFileSync, existsSync, mkdirSync } from
 import { dirname, join } from 'node:path';
 import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
+import TOML from '@iarna/toml';
 
 // Windows Terminal accepts comments and trailing commas. Preserve quoted strings,
 // including URLs, escaped quotes, and Windows paths while removing JSONC syntax.
@@ -61,22 +62,25 @@ export function terminalSettings(settings) {
 
 export function herdrSettings(source, { platform = process.platform } = {}) {
   const shortcut = platform === 'darwin' ? 'ctrl+alt+v' : 'ctrl+v';
-  const stanza = `[[keys.command]]\nkey = "${shortcut}"\ntype = "plugin_action"\ncommand = "matemate.clipboard.paste"\ndescription = "Paste image file or text"\n`;
-  const blocks = [...source.matchAll(/\[\[keys\.command\]\][\s\S]*?(?=\n\[|$)/g)];
-  const owned = blocks.filter(block => /command\s*=\s*["']matemate\.clipboard\.(paste|attach)["']/.test(block[0]));
-  const keyPattern = new RegExp(`key\\s*=\\s*["']${shortcut.replace(/\+/g, '\\+')}["']`);
-  if (blocks.some(block => !owned.includes(block) && keyPattern.test(block[0]))) {
+  const settings = TOML.parse(source);
+  const binding = {key: shortcut, type: 'plugin_action', command: 'matemate.clipboard.paste', description: 'Paste image file or text'};
+  settings.keys ??= {};
+  const commands = settings.keys.command ?? [];
+  if (!Array.isArray(commands)) throw new Error('Herdr keys.command must be an array of tables.');
+  const isOwned = entry => ['matemate.clipboard.paste', 'matemate.clipboard.attach'].includes(entry.command);
+  if (commands.some(entry => !isOwned(entry) && entry.key === shortcut)) {
     throw new Error(`Herdr already has a custom ${shortcut} binding; it has been left unchanged.`);
   }
-  if (owned.length) {
-    let updated = source;
-    for (let index = owned.length - 1; index >= 0; index--) {
-      const block = owned[index];
-      updated = updated.slice(0, block.index) + (index === 0 ? stanza : '') + updated.slice(block.index + block[0].length);
-    }
-    return updated.replace('# MateMate: optional image preview; native Ctrl+V remains available.', '# MateMate: console clipboard support.');
-  }
-  return source + '\n# MateMate: console clipboard support.\n' + stanza;
+  let replaced = false;
+  settings.keys.command = commands.flatMap(entry => {
+    if (!isOwned(entry)) return [entry];
+    if (replaced) return [];
+    replaced = true;
+    return [binding];
+  });
+  if (!replaced) settings.keys.command.push(binding);
+  if (JSON.stringify(TOML.parse(source)) === JSON.stringify(settings)) return source;
+  return TOML.stringify(settings);
 }
 
 function update(path, transform) {
