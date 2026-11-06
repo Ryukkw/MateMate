@@ -48,10 +48,11 @@ print(json.dumps(sys.argv[1:]))
         ('1', ['--no-daemon', 'resume', 'thread-id'], ['--no-daemon', 'resume', 'thread-id']),
         ('0', ['resume', 'thread-id'], ['resume', 'thread-id']),
     ]
-    for command in ('e', 'a', 'archive', 'delete', 'unarchive', 'exec-server'):
+    for command in ('e', 'a', 'archive', 'delete', 'unarchive', 'exec-server', 'migrate-rollouts', 'migrate-nfs-db'):
         for prefix in ([], ['--model', 'chosen-model']):
             arguments = [*prefix, command, 'task with spaces']
-            cases.append(('1', arguments, arguments))
+            for marker in ('1', '0'):
+                cases.append((marker, arguments, arguments))
     for marker, arguments, expected in cases:
         env = dict(environment, HERDR_ENV=marker)
         actual = json.loads(subprocess.check_output([str(destination), *arguments], env=env, text=True))
