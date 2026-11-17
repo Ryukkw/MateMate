@@ -495,6 +495,18 @@
     {
       "path": "skills/stow/SKILL.md",
       "audience": "public-product"
+    },
+    {
+      "path": "UPSTREAM.md",
+      "audience": "public-product"
+    },
+    {
+      "path": "docs/FIRSTMATE-UPSTREAM.md",
+      "audience": "maintainer-architecture"
+    },
+    {
+      "path": "setup/config/npm-packages.txt",
+      "audience": "operator-example"
     }
   ]
 }

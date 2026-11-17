@@ -1,0 +1,12 @@
+id = "matemate.clipboard"
+name = "MateMate Clipboard"
+version = "0.1.0"
+min_herdr_version = "0.9.0"
+description = "Paste clipboard images as local file attachments without a separate viewer"
+platforms = ["macos", "windows", "linux"]
+
+[[actions]]
+id = "paste"
+title = "Paste clipboard image or text"
+contexts = ["pane"]
+command = ["node", "paste.mjs"]

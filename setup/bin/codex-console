@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# MateMate: keep interactive Codex sessions local to their Herdr pane.
+set -euo pipefail
+MATE_NATIVE_CODEX="$HOME/.codex/packages/standalone/current/bin/codex"
+[[ -x "$MATE_NATIVE_CODEX" ]] || { echo 'MateMate: native Codex executable is missing.' >&2; exit 127; }
+MATE_INTERACTIVE=1
+MATE_SKIP_NEXT=0
+for MATE_ARG in "$@"; do
+  if [[ "$MATE_SKIP_NEXT" == 1 ]]; then MATE_SKIP_NEXT=0; continue; fi
+  case "$MATE_ARG" in
+    --no-daemon|--help|-h|--version|-V|--remote|--remote=*) MATE_INTERACTIVE=0; break ;;
+    -c|--config|-m|--model|-p|--profile|-C|--cd|--add-dir|-s|--sandbox|-a|--ask-for-approval|-i|--image|--enable|--disable|--remote-auth-token-env) MATE_SKIP_NEXT=1 ;;
+    --) break ;;
+    -*) ;;
+    resume|fork) break ;;
+    exec|e|exec-server|review|login|logout|mcp|mcp-server|app-server|app|completion|sandbox|debug|apply|a|archive|delete|unarchive|migrate-rollouts|migrate-nfs-db|cloud|features|plugin|update|doctor|agents|queue|remote-control) MATE_INTERACTIVE=0; break ;;
+    *) break ;;
+  esac
+done
+if [[ "${HERDR_ENV:-}" == 1 && "$MATE_INTERACTIVE" == 1 ]]; then
+  exec "$MATE_NATIVE_CODEX" --no-daemon "$@"
+fi
+exec "$MATE_NATIVE_CODEX" "$@"
